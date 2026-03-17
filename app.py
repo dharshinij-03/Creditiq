@@ -7,6 +7,8 @@ Visit: http://localhost:5000
 
 from flask import Flask, render_template, request, jsonify, send_file
 import json, io
+import os
+
 from scoring import compute_scores
 from research import run_research_agent
 from cam_generator import generate_cam_pdf
@@ -83,5 +85,6 @@ def generate_cam():
     )
 
 if __name__ == "__main__":
-    print("\n  CreditIQ starting on http://localhost:5000\n")
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    print(f"\n  CreditIQ starting on http://0.0.0.0:{port}\n")
+    app.run(host="0.0.0.0", port=port, debug=False)
