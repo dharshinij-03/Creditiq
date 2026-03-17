@@ -2,7 +2,7 @@
 
 ---
 
-## SETUP (2 minutes)
+## SETUP 
 
 ### Step 1: Install Python dependencies
 ```bash
