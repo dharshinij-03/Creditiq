@@ -12,8 +12,7 @@ pip install flask reportlab
 ### Step 2: Run the app
 ```bash
 cd creditiq
-python app.py
-```
+gunicorn app:app```
 
 ### Step 3: Open in browser
 ```
