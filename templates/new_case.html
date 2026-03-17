@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CreditIQ — New Case</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --em: #059669; --em-light: #d1fae5; --em-dark: #064e3b;
+    --amber: #d97706; --amb-light: #fef3c7;
+    --red: #dc2626; --red-light: #fee2e2;
+    --dark: #1c1c1e; --dark2: #2c2c2e;
+    --bg: #f5f7fa; --bg2: #ffffff;
+    --text: #111111; --text2: #555555; --text3: #888888;
+    --border: #e5e7eb;
+  }
+  body { font-family: -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+  nav { background: var(--dark); padding: 0 28px; height: 52px; display: flex; align-items: center; gap: 24px; }
+  .brand { font-size: 20px; font-weight: 700; color: var(--em); margin-right: 16px; }
+  nav a { color: #aaa; text-decoration: none; font-size: 13px; padding: 6px 12px; border-radius: 6px; transition: all 0.15s; }
+  nav a:hover, nav a.active { background: rgba(5,150,105,0.15); color: var(--em); }
+  .container { max-width: 900px; margin: 0 auto; padding: 28px 20px; }
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+  .card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  label { font-size: 12px; color: var(--text3); font-weight: 500; }
+  input, select, textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; font-family: inherit; background: var(--bg2); color: var(--text); transition: border 0.15s; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--em); box-shadow: 0 0 0 3px rgba(5,150,105,0.12); }
+  textarea { resize: vertical; min-height: 70px; }
+  .btn { display: inline-block; padding: 9px 20px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg2); color: var(--text); transition: all 0.15s; font-family: inherit; }
+  .btn:hover { background: var(--bg); }
+  .btn-em { background: var(--em); color: #fff; border-color: var(--em); }
+  .btn-em:hover { background: var(--em-dark); }
+  .btn-row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+
+  /* STEPS */
+  .steps { display: flex; align-items: center; margin-bottom: 24px; }
+  .step { display: flex; align-items: center; gap: 7px; font-size: 13px; }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border: 2px solid var(--border); color: var(--text3); flex-shrink: 0; }
+  .step.active .step-num { border-color: var(--em); color: var(--em); }
+  .step.done .step-num { background: var(--em); border-color: var(--em); color: #fff; }
+  .step-label { color: var(--text3); white-space: nowrap; }
+  .step.active .step-label { color: var(--em); font-weight: 600; }
+  .step.done .step-label { color: var(--text); }
+  .step-line { flex: 1; height: 1px; background: var(--border); margin: 0 8px; }
+
+  /* BADGES */
+  .badge { display: inline-block; padding: 3px 9px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .high { background: var(--red-light); color: var(--red); }
+  .med  { background: var(--amb-light); color: var(--amber); }
+  .low  { background: var(--em-light);  color: var(--em-dark); }
+  .crit { background: #7f1d1d; color: #fca5a5; }
+
+  /* ANALYSIS LOG */
+  .log-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text3); }
+  .log-item.done { color: var(--text); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+  .dot.done { background: var(--em); }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--em); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* SCORE CARDS */
+  .score-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 14px 0; }
+  .score-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px 8px; text-align: center; }
+  .score-label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .score-val { font-size: 30px; font-weight: 700; }
+  .score-wt { font-size: 10px; color: var(--text3); margin-top: 2px; }
+  .bar-wrap { background: var(--bg); border-radius: 4px; height: 5px; margin-top: 6px; overflow: hidden; }
+  .bar { height: 5px; border-radius: 4px; }
+
+  /* DECISION */
+  .decision-box { border-radius: 10px; padding: 16px 20px; margin: 14px 0; border: 2px solid; }
+  .decision-approve { background: var(--em-light); border-color: var(--em); }
+  .decision-review  { background: var(--amb-light); border-color: var(--amber); }
+  .decision-reject  { background: var(--red-light); border-color: var(--red); }
+  .decision-label { font-size: 20px; font-weight: 700; }
+
+  /* FLAGS */
+  .flag-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .flag-item:last-child { border-bottom: none; }
+
+  /* REASONING */
+  .reasoning { background: var(--em-light); border-left: 3px solid var(--em); border-radius: 0 8px 8px 0; padding: 12px 14px; font-size: 13px; line-height: 1.65; color: #065f46; margin-top: 12px; }
+
+  /* RESEARCH */
+  .research-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .research-item:last-child { border-bottom: none; }
+  .research-source { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px; }
+  .research-finding { font-size: 13px; }
+
+  /* CAM PREVIEW */
+  .cam-section { margin-bottom: 18px; }
+  .cam-section-title { font-size: 12px; font-weight: 700; color: var(--em); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--em-light); }
+  table.kv { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.kv td { padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  table.kv tr:nth-child(even) td { background: var(--bg); }
+  table.kv td:first-child { color: var(--text3); font-weight: 500; width: 38%; }
+
+  .hidden { display: none !important; }
+  .mt16 { margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">CreditIQ</span>
+  <a href="/">Dashboard</a>
+  <a href="/new-case" class="active">New Case</a>
+</nav>
+
+<div class="container">
+
+  <!-- STEP INDICATOR -->
+  <div class="steps" id="step-bar">
+    <div class="step active" id="step-1"><div class="step-num">1</div><span class="step-label">Company</span></div>
+    <div class="step-line"></div>
+    <div class="step" id="step-2"><div class="step-num">2</div><span class="step-label">GST Check</span></div>
+    <div class="step-line"></div>
+    <div class="step" id="step-3"><div class="step-num">3</div><span class="step-label">Field Notes</span></div>
+    <div class="step-line"></div>
+    <div class="step" id="step-4"><div class="step-num">4</div><span class="step-label">Analysis</span></div>
+    <div class="step-line"></div>
+    <div class="step" id="step-5"><div class="step-num">5</div><span class="step-label">CAM Report</span></div>
+  </div>
+
+  <!-- ══ FORM 1: COMPANY DETAILS ══ -->
+  <div id="form-1">
+    <div class="card">
+      <div class="card-title">Company & Financial Details</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Company Name *</label><input id="co-name" placeholder="e.g. Verma Industries Ltd"></div>
+        <div class="form-group"><label>CIN Number</label><input id="co-cin" placeholder="e.g. L21012MH2010PLC204567"></div>
+        <div class="form-group"><label>GST Number</label><input id="co-gst" placeholder="e.g. 27AAACV1234K1ZS"></div>
+        <div class="form-group"><label>Sector</label>
+          <select id="co-sector">
+            <option>Pharma Mfg</option><option>Real Estate</option>
+            <option>Agriculture</option><option>NBFC</option>
+            <option>Textiles</option><option>Infrastructure</option><option>IT Services</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Loan Ask (₹ Crore) *</label><input id="co-loan" type="number" placeholder="e.g. 28"></div>
+        <div class="form-group"><label>Tenor (months)</label><input id="co-tenor" type="number" placeholder="e.g. 60" value="60"></div>
+      </div>
+      <div class="form-grid mt16">
+        <div class="form-group"><label>Revenue FY2024 (₹ Cr)</label><input id="fin-rev"    type="number" placeholder="e.g. 52"></div>
+        <div class="form-group"><label>EBITDA (₹ Cr)</label>         <input id="fin-ebitda" type="number" placeholder="e.g. 8.2"></div>
+        <div class="form-group"><label>PAT (₹ Cr)</label>            <input id="fin-pat"    type="number" placeholder="e.g. 4.5"></div>
+        <div class="form-group"><label>Total Debt (₹ Cr)</label>     <input id="fin-debt"   type="number" placeholder="e.g. 18"></div>
+        <div class="form-group"><label>Net Worth (₹ Cr)</label>      <input id="fin-nw"     type="number" placeholder="e.g. 16"></div>
+        <div class="form-group"><label>DSCR</label>                  <input id="fin-dscr"   type="number" placeholder="e.g. 1.44" step="0.01"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-em" onclick="nextStep(2)">Next: GST Validation →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FORM 2: GST CHECK ══ -->
+  <div id="form-2" class="hidden">
+    <div class="card">
+      <div class="card-title">GST Cross-Validation</div>
+      <div class="form-grid">
+        <div class="form-group"><label>GSTR-3B Declared Revenue (₹ Cr/yr)</label><input id="gst-3b" type="number" placeholder="e.g. 52"></div>
+        <div class="form-group"><label>GSTR-2A Auto-populated Revenue (₹ Cr/yr)</label><input id="gst-2a" type="number" placeholder="e.g. 49"></div>
+        <div class="form-group"><label>Bank Balance Avg Monthly (₹ Cr)</label><input id="bank-bal" type="number" step="0.1" placeholder="e.g. 2.4"></div>
+        <div class="form-group"><label>Circular Transactions Detected</label>
+          <select id="circular">
+            <option value="0">None detected</option>
+            <option value="1">1–2 instances</option>
+            <option value="2">3+ instances (HIGH risk)</option>
+          </select>
+        </div>
+      </div>
+      <div id="gst-results" class="hidden mt16"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="nextStep(1)">← Back</button>
+        <button class="btn btn-em" onclick="runGSTCheck()">Run GST Check →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FORM 3: FIELD NOTES ══ -->
+  <div id="form-3" class="hidden">
+    <div class="card">
+      <div class="card-title">Field Notes & Qualitative Inputs</div>
+      <p style="color:var(--text3);font-size:13px;margin-bottom:16px">Credit officer observations from site visit and management due diligence.</p>
+      <div class="form-grid">
+        <div class="form-group"><label>Factory / Operations Capacity</label>
+          <select id="q-cap">
+            <option value="3">Full capacity (90%+)</option>
+            <option value="2">Moderate (60–90%)</option>
+            <option value="1">Low (40–60%)</option>
+            <option value="0">Very low (below 40%)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Management Cooperation</label>
+          <select id="q-mgmt">
+            <option value="2">Very cooperative</option>
+            <option value="1">Cooperative</option>
+            <option value="0">Evasive / uncooperative</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Promoter Shareholding Pledge</label>
+          <select id="q-pledge">
+            <option value="2">Below 30% pledged</option>
+            <option value="1">30–60% pledged</option>
+            <option value="0">Above 60% pledged</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Legal / Regulatory Issues Found</label>
+          <select id="q-legal">
+            <option value="2">No issues found</option>
+            <option value="1">Minor / historical cases only</option>
+            <option value="0">Active ED / NCLT proceedings</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group mt16">
+        <label>Additional Site Visit Notes</label>
+        <textarea id="q-notes" placeholder="e.g. New ₹8 Cr machinery installed but not yet in audited financials. Cold storage expansion in progress..."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="nextStep(2)">← Back</button>
+        <button class="btn btn-em" onclick="runFullAnalysis()">Run Full AI Analysis →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FORM 4: ANALYSIS PROGRESS ══ -->
+  <div id="form-4" class="hidden">
+    <div class="card">
+      <div class="card-title">Running CreditIQ Analysis Engine</div>
+      <div id="log-container"></div>
+    </div>
+  </div>
+
+  <!-- ══ FORM 5: RESULTS + CAM ══ -->
+  <div id="form-5" class="hidden">
+    <div id="result-container"></div>
+  </div>
+
+</div>
+
+<script>
+const SAMPLE_CASES = {
+  verma:   { name:"Verma Industries Ltd",  cin:"L21012MH2010PLC204567", gst:"27AAACV1234K1ZS", sector:"Pharma Mfg",   loan:28, tenor:60, rev:52.1, ebitda:8.2,  pat:4.5, debt:18, nw:16,  dscr:1.44, gst3b:52,  gst2a:49,  bank:2.4, circ:"1", qcap:2, qmgmt:2, qpledge:1, qlegal:1, notes:"New ₹8 Cr machinery installed. Operations healthy." },
+  krishna: { name:"Krishna Constructions", cin:"U45200KA2012PTC062845",  gst:"29AAACK5566M1Z8", sector:"Real Estate",  loan:55, tenor:84, rev:38.0, ebitda:5.1,  pat:1.8, debt:32, nw:9,   dscr:1.12, gst3b:38,  gst2a:32,  bank:1.1, circ:"2", qcap:1, qmgmt:0, qpledge:0, qlegal:0, notes:"Site visit inconclusive. Promoter uncooperative." },
+  agro:    { name:"Agro Exports Pvt Ltd",  cin:"U01100GJ2015PTC082901",  gst:"24AAAAG1122B1ZT", sector:"Agriculture",  loan:12, tenor:36, rev:24.8, ebitda:4.8,  pat:2.9, debt:7,  nw:14,  dscr:1.82, gst3b:24,  gst2a:24,  bank:3.2, circ:"0", qcap:3, qmgmt:2, qpledge:2, qlegal:2, notes:"Excellent site. New cold storage operational." },
+  pqr:     { name:"PQR Microfinance Ltd",  cin:"U65910MH2018PLC310452",  gst:"27AAAPQ9988N1Z2", sector:"NBFC",        loan:35, tenor:60, rev:41.0, ebitda:9.2,  pat:3.1, debt:28, nw:11,  dscr:1.28, gst3b:41,  gst2a:39,  bank:1.8, circ:"1", qcap:2, qmgmt:1, qpledge:0, qlegal:0, notes:"RBI NBFC regulations tightening — sector risk elevated." },
+};
+
+// Auto-load sample case from URL param
+const urlCase = new URLSearchParams(location.search).get("case");
+if (urlCase && SAMPLE_CASES[urlCase]) {
+  const c = SAMPLE_CASES[urlCase];
+  setTimeout(() => {
+    document.getElementById("co-name").value  = c.name;
+    document.getElementById("co-cin").value   = c.cin;
+    document.getElementById("co-gst").value   = c.gst;
+    document.getElementById("co-sector").value= c.sector;
+    document.getElementById("co-loan").value  = c.loan;
+    document.getElementById("co-tenor").value = c.tenor;
+    document.getElementById("fin-rev").value  = c.rev;
+    document.getElementById("fin-ebitda").value = c.ebitda;
+    document.getElementById("fin-pat").value  = c.pat;
+    document.getElementById("fin-debt").value = c.debt;
+    document.getElementById("fin-nw").value   = c.nw;
+    document.getElementById("fin-dscr").value = c.dscr;
+    document.getElementById("gst-3b").value   = c.gst3b;
+    document.getElementById("gst-2a").value   = c.gst2a;
+    document.getElementById("bank-bal").value = c.bank;
+    document.getElementById("circular").value = c.circ;
+    document.getElementById("q-cap").value    = c.qcap;
+    document.getElementById("q-mgmt").value   = c.qmgmt;
+    document.getElementById("q-pledge").value = c.qpledge;
+    document.getElementById("q-legal").value  = c.qlegal;
+    document.getElementById("q-notes").value  = c.notes;
+  }, 50);
+}
+
+let currentStep = 1;
+let analysisResult = null;
+let gstResult = null;
+
+function setStepState(n, state) {
+  const el = document.getElementById("step-" + n);
+  el.className = "step" + (state === "active" ? " active" : state === "done" ? " done" : "");
+}
+
+function nextStep(n) {
+  if (n === 2 && !document.getElementById("co-name").value.trim()) {
+    alert("Please enter a company name."); return;
+  }
+  [1,2,3,4,5].forEach(i => {
+    document.getElementById("form-" + i).classList.add("hidden");
+    if (i < n) setStepState(i, "done");
+    else if (i === n) setStepState(i, "active");
+    else setStepState(i, "");
+  });
+  document.getElementById("form-" + n).classList.remove("hidden");
+  currentStep = n;
+  window.scrollTo(0,0);
+}
+
+async function runGSTCheck() {
+  const b = parseFloat(document.getElementById("gst-3b").value) || 0;
+  const a = parseFloat(document.getElementById("gst-2a").value) || 0;
+  const c = parseInt(document.getElementById("circular").value) || 0;
+
+  const resp = await fetch("/api/gst-check", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ gst3b:b, gst2a:a, circular:c })
+  });
+  gstResult = await resp.json();
+
+  const el = document.getElementById("gst-results");
+  el.classList.remove("hidden");
+  if (gstResult.flags.length === 0) {
+    el.innerHTML = `<div style="color:var(--em);font-size:13px">✓ GST returns appear consistent — no significant mismatch detected.</div>`;
+  } else {
+    let html = "<div class='card-title' style='margin-bottom:8px'>GST Validation Results</div>";
+    gstResult.flags.forEach(f => {
+      const cls = f.level==="HIGH" ? "high" : f.level==="CRITICAL" ? "crit" : "med";
+      html += `<div class='flag-item'><span>${f.issue} — ${f.amount}</span><span class='badge ${cls}'>${f.level}</span></div>`;
+    });
+    el.innerHTML = html;
+  }
+  setTimeout(() => nextStep(3), 900);
+}
+
+function collectPayload() {
+  return {
+    company_name: document.getElementById("co-name").value,
+    cin:          document.getElementById("co-cin").value,
+    gst_number:   document.getElementById("co-gst").value,
+    sector:       document.getElementById("co-sector").value,
+    loan_ask:     parseFloat(document.getElementById("co-loan").value)   || 20,
+    tenor:        parseInt(document.getElementById("co-tenor").value)    || 60,
+    revenue:      parseFloat(document.getElementById("fin-rev").value)   || 30,
+    ebitda:       parseFloat(document.getElementById("fin-ebitda").value)|| 4,
+    pat:          parseFloat(document.getElementById("fin-pat").value)   || 2,
+    total_debt:   parseFloat(document.getElementById("fin-debt").value)  || 15,
+    net_worth:    parseFloat(document.getElementById("fin-nw").value)    || 10,
+    dscr:         parseFloat(document.getElementById("fin-dscr").value)  || 1.2,
+    gst3b:        parseFloat(document.getElementById("gst-3b").value)    || 0,
+    gst2a:        parseFloat(document.getElementById("gst-2a").value)    || 0,
+    circular:     parseInt(document.getElementById("circular").value)    || 0,
+    q_capacity:   parseInt(document.getElementById("q-cap").value)       || 1,
+    q_mgmt:       parseInt(document.getElementById("q-mgmt").value)      || 1,
+    q_pledge:     parseInt(document.getElementById("q-pledge").value)    || 1,
+    q_legal:      parseInt(document.getElementById("q-legal").value)     || 1,
+    notes:        document.getElementById("q-notes").value,
+  };
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function runFullAnalysis() {
+  nextStep(4);
+  const payload = collectPayload();
+  const log = document.getElementById("log-container");
+
+  const steps = [
+    "Parsing financial statements...",
+    "Running GST cross-validation (GSTR-3B vs GSTR-2A)...",
+    "Checking MCA21 director DIN records...",
+    "Scanning eCourts for active litigation...",
+    "Running news & regulatory intelligence...",
+    "Applying Five-Cs ML scoring model...",
+    "Generating explainable decision logic...",
+  ];
+
+  let html = steps.map((s,i) => `<div class="log-item" id="log-${i}"><div class="dot" id="dot-${i}"></div><span id="txt-${i}">${s}</span></div>`).join("");
+  log.innerHTML = html;
+
+  // Animate steps
+  for (let i = 0; i < steps.length; i++) {
+    document.getElementById("dot-"+i).outerHTML = `<div class="spinner" id="dot-${i}"></div>`;
+    await sleep(550 + Math.random()*350);
+    document.getElementById("dot-"+i).outerHTML = `<div class="dot done" id="dot-${i}"></div>`;
+    document.getElementById("txt-"+i).style.color = "var(--text)";
+    document.getElementById("log-"+i).classList.add("done");
+  }
+
+  // Parallel API calls
+  const [scoreResp, researchResp] = await Promise.all([
+    fetch("/api/score", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    }),
+    fetch("/api/research", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ company_name: payload.company_name, sector: payload.sector })
+    })
+  ]);
+
+  const scoreData    = await scoreResp.json();
+  const researchData = await researchResp.json();
+  analysisResult = { ...scoreData, ...payload, research: researchData,
+    flags: (gstResult?.flags || []) };
+
+  await sleep(300);
+  renderResults(analysisResult, researchData);
+  nextStep(5);
+}
+
+function scoreCol(s) {
+  return s >= 75 ? "var(--em)" : s >= 60 ? "var(--amber)" : "var(--red)";
+}
+function decisionClass(d) {
+  if (d.includes("APPROVE") && !d.includes("REJECT")) return "decision-approve";
+  if (d === "REJECT") return "decision-reject";
+  return "decision-review";
+}
+
+function renderResults(d, research) {
+  const scores   = d.scores || {};
+  const fiveCs   = [
+    { label:"Character",  key:"character",  wt:"25%" },
+    { label:"Capacity",   key:"capacity",   wt:"30%" },
+    { label:"Capital",    key:"capital",    wt:"20%" },
+    { label:"Collateral", key:"collateral", wt:"15%" },
+    { label:"Conditions", key:"conditions", wt:"10%" },
+  ];
+
+  let html = `
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <div style="font-size:18px;font-weight:700">${d.company_name}</div>
+      <span class="badge ${d.risk_band==="LOW"?"low":d.risk_band==="MEDIUM"?"med":"high"}" style="font-size:13px;padding:4px 12px">
+        ${d.risk_band} RISK · ${d.weighted_score}/100
+      </span>
+    </div>
+    <div style="color:var(--text3);font-size:13px">${d.sector} · Loan Ask: ₹${d.loan_ask} Cr · Tenor: ${d.tenor} months</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Five-Cs Scorecard</div>
+    <div class="score-grid">`;
+
+  fiveCs.forEach(c => {
+    const sc = scores[c.key] || 0;
+    html += `<div class="score-card">
+      <div class="score-label">${c.label}</div>
+      <div class="score-val" style="color:${scoreCol(sc)}">${sc}</div>
+      <div class="score-wt">${c.wt} weight</div>
+      <div class="bar-wrap"><div class="bar" style="width:${sc}%;background:${scoreCol(sc)}"></div></div>
+    </div>`;
+  });
+
+  html += `</div>
+    <div style="font-size:13px;color:var(--text3)">Weighted Score: <strong style="color:var(--text)">${d.weighted_score} / 100</strong></div>
+  </div>`;
+
+  // Research findings
+  const findings = research.findings || [];
+  const highFindings = findings.filter(f => f.level === "HIGH" || f.level === "CRITICAL");
+  if (highFindings.length > 0) {
+    html += `<div class="card"><div class="card-title">Research Agent Findings</div>`;
+    findings.forEach(f => {
+      const cls = f.level==="HIGH"||f.level==="CRITICAL" ? "high" : f.level==="MEDIUM" ? "med" : "low";
+      html += `<div class="research-item">
+        <div class="research-source">${f.source}</div>
+        <div class="research-finding" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <span>${f.finding}</span>
+          <span class="badge ${cls}">${f.level}</span>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // GST flags
+  if (d.flags && d.flags.length > 0) {
+    html += `<div class="card"><div class="card-title">GST Risk Flags</div>`;
+    d.flags.forEach(f => {
+      const cls = f.level==="HIGH" ? "high" : "med";
+      html += `<div class="flag-item"><span>${f.issue} — ${f.amount}</span><span class="badge ${cls}">${f.level}</span></div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Decision
+  html += `<div class="card">
+    <div class="card-title">Recommendation</div>
+    <div class="decision-box ${decisionClass(d.decision)}">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="decision-label">${d.decision}</div>
+          ${d.recommended_limit > 0
+            ? `<div style="font-size:13px;margin-top:4px;color:var(--text2)">Limit: <strong>₹${d.recommended_limit} Cr</strong> · Rate: <strong>${d.interest_rate}</strong> · Tenor: <strong>${d.tenor} months</strong></div>`
+            : ""}
+        </div>
+        <span class="badge ${d.risk_band==="LOW"?"low":d.risk_band==="MEDIUM"?"med":"high"}" style="font-size:13px;padding:5px 14px">${d.risk_band}</span>
+      </div>
+    </div>
+    <div class="reasoning"><strong>AI Reasoning:</strong> ${d.rationale}</div>
+    <div class="btn-row mt16">
+      <button class="btn btn-em" onclick="downloadCAM()">Download CAM Report (PDF) ↓</button>
+    </div>
+  </div>`;
+
+  document.getElementById("result-container").innerHTML = html;
+  setStepState(5, "active");
+}
+
+async function downloadCAM() {
+  if (!analysisResult) return;
+  const resp = await fetch("/api/generate-cam", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify(analysisResult)
+  });
+  const blob = await resp.blob();
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href = url;
+  a.download = `CAM_${analysisResult.company_name.replace(/\s/g,"_")}.pdf`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>

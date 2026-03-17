@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CreditIQ — Dashboard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --em: #059669; --em-light: #d1fae5; --em-dark: #064e3b;
+    --amber: #d97706; --amb-light: #fef3c7;
+    --red: #dc2626; --red-light: #fee2e2;
+    --sky: #0ea5e9; --sky-light: #e0f2fe;
+    --dark: #1c1c1e; --dark2: #2c2c2e; --dark3: #3a3a3c;
+    --bg: #f5f7fa; --bg2: #ffffff;
+    --text: #111111; --text2: #555555; --text3: #888888;
+    --border: #e5e7eb;
+  }
+  body { font-family: -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+  /* NAV */
+  nav { background: var(--dark); padding: 0 28px; height: 52px; display: flex; align-items: center; gap: 24px; }
+  .brand { font-size: 20px; font-weight: 700; color: var(--em); letter-spacing: -0.5px; margin-right: 16px; }
+  nav a { color: #aaa; text-decoration: none; font-size: 13px; padding: 6px 12px; border-radius: 6px; transition: all 0.15s; }
+  nav a:hover, nav a.active { background: rgba(5,150,105,0.15); color: var(--em); }
+
+  /* LAYOUT */
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+  .page-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+
+  /* KPI ROW */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .kpi { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .kpi-val { font-size: 32px; font-weight: 700; line-height: 1; }
+  .kpi-label { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+  /* CARDS */
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 18px; }
+  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 9px 12px; font-weight: 600; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--bg); }
+
+  /* BADGES */
+  .badge { display: inline-block; padding: 3px 9px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .high   { background: var(--red-light);  color: var(--red);   }
+  .med    { background: var(--amb-light);  color: var(--amber); }
+  .low    { background: var(--em-light);   color: var(--em-dark); }
+
+  /* BUTTONS */
+  .btn { display: inline-block; padding: 7px 16px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--bg2); color: var(--text); text-decoration: none; transition: all 0.15s; }
+  .btn:hover { background: var(--bg); }
+  .btn-em { background: var(--em); color: #fff; border-color: var(--em); }
+  .btn-em:hover { background: var(--em-dark); }
+  .btn-sm { padding: 4px 11px; font-size: 12px; }
+
+  /* FLAGS */
+  .flag-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .flag-item:last-child { border-bottom: none; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">CreditIQ</span>
+  <a href="/" class="active">Dashboard</a>
+  <a href="/new-case">New Case</a>
+</nav>
+
+<div class="container">
+  <div class="page-title">Credit Intelligence Dashboard</div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-val" style="color:var(--em)">17</div><div class="kpi-label">Active Cases</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--amber)">4</div><div class="kpi-label">Research Queue</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--red)">3</div><div class="kpi-label">Risk Alerts</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--sky)">9</div><div class="kpi-label">CAMs Ready</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Active Applications</div>
+    <table>
+      <thead>
+        <tr><th>Company</th><th>Sector</th><th>Loan Ask</th><th>Risk Score</th><th>Stage</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Verma Industries Ltd</strong></td>
+          <td>Pharma Mfg</td><td>₹28 Cr</td>
+          <td><span class="badge med">76 / MED</span></td>
+          <td>In Review</td>
+          <td><a href="/new-case?case=verma" class="btn btn-sm">Open</a></td>
+        </tr>
+        <tr>
+          <td><strong>Krishna Constructions</strong></td>
+          <td>Real Estate</td><td>₹55 Cr</td>
+          <td><span class="badge high">38 / HIGH</span></td>
+          <td>Research</td>
+          <td><a href="/new-case?case=krishna" class="btn btn-sm">Open</a></td>
+        </tr>
+        <tr>
+          <td><strong>Agro Exports Pvt Ltd</strong></td>
+          <td>Agriculture</td><td>₹12 Cr</td>
+          <td><span class="badge low">84 / LOW</span></td>
+          <td>CAM Ready</td>
+          <td><a href="/new-case?case=agro" class="btn btn-sm">Open</a></td>
+        </tr>
+        <tr>
+          <td><strong>PQR Microfinance Ltd</strong></td>
+          <td>NBFC</td><td>₹35 Cr</td>
+          <td><span class="badge high">51 / HIGH</span></td>
+          <td>Pending</td>
+          <td><a href="/new-case?case=pqr" class="btn btn-sm">Open</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row2">
+    <div class="card">
+      <div class="card-title">Recent Risk Flags</div>
+      <div class="flag-item"><span>Krishna Const. — GSTR-2A vs 3B ₹6.2 Cr</span><span class="badge high">HIGH</span></div>
+      <div class="flag-item"><span>PQR Microfinance — Promoter ED Inquiry</span><span class="badge high">HIGH</span></div>
+      <div class="flag-item"><span>Verma Ind. — DIN linked to struck-off co.</span><span class="badge med">MED</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Start New Appraisal</div>
+      <p style="color:var(--text3);font-size:13px;margin-bottom:14px;line-height:1.6">
+        Run a complete AI credit appraisal — GST check, research agent, Five-Cs scoring, and CAM generation.
+      </p>
+      <a href="/new-case" class="btn btn-em">+ New Case →</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
